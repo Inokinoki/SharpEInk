@@ -58,20 +58,23 @@ namespace WinIoTEPDInk
                 byte[] generatedImage = new byte[4 * Width * Height];
                 for (int i = 0; i < Width * Height; ++i)
                 {
-                    generatedImage[4 * i] = 255;
-                    generatedImage[4 * i + 1] = 255;
-                    generatedImage[4 * i + 2] = 255;
-                    generatedImage[4 * i + 3] = 255;
-                    if ((buffer[i / 8] & (0x80 >> (i % 8))) == 1)
+                    //generatedImage[4 * i] = 255;
+                    //generatedImage[4 * i + 1] = 255;
+                    //generatedImage[4 * i + 2] = 255;
+                    //generatedImage[4 * i + 3] = 255;
+                    if ((buffer[i / 8] & (0x80 >> (i % 8))) != 0)
+                    {
+                        generatedImage[4 * i] = 255;
+                        generatedImage[4 * i + 1] = 255;
+                        generatedImage[4 * i + 2] = 255;
+                        generatedImage[4 * i + 3] = 255;
+                    }
+                    else
                     {
                         generatedImage[4 * i] = 0;
                         generatedImage[4 * i + 1] = 0;
                         generatedImage[4 * i + 2] = 0;
                         generatedImage[4 * i + 3] = 0;
-                    }
-                    else
-                    {
-                        generatedImage[4 * i] = 255;
                     }
                 }
 
@@ -85,29 +88,11 @@ namespace WinIoTEPDInk
                        (uint)Width, (uint)Height, 75, 75, generatedImage.ToArray());
                     await encoder.FlushAsync();
                 }
-
-                /* Create a stream to store encoded bitmap data */
-                //IRandomAccessStream stream = new InMemoryRandomAccessStream();
-                //stream.Size = (ulong)(4 * Width * Height);
-
-                // Encode image
-                //var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-                //encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Ignore,
-                //    (uint)Width, (uint)Height, 75, 75, generatedImage.ToArray());
-                //await stream.FlushAsync();
-                //stream.Seek(0);
-
-                //await stream.WriteAsync(generatedImage.AsBuffer());
-                //stream.Seek(0);
-
-                //Debug.WriteLine(stream.Size);
-                Stream s = await applicationfolder.OpenStreamForReadAsync("test.png");
-
+                
                 /* Create a bitmap source */
+                Stream s = await applicationfolder.OpenStreamForReadAsync("test.png");
                 BitmapImage imageSource = new BitmapImage();
                 await imageSource.SetSourceAsync(s.AsRandomAccessStream());
-                //imageSource.SetSource(stream);
-                // await imageSource.SetSourceAsync(stream);
 
                 BitmapImage One = new BitmapImage(new Uri("ms-appx:///Assets/StoreLogo.png"));
 
