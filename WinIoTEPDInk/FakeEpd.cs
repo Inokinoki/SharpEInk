@@ -128,6 +128,67 @@ namespace WinIoTEPDInk
                 return;
             }
 
+            int x_end, y_end;
+            int offset = startX % 8;
+
+            if (image_buffer.Length <= 0 || startX < 0 || image_width < 0 || startY < 0 || image_height < 0)
+            {
+                return;
+            }
+            
+            /* x point must be the multiple of 8 or the last 3 bits will be ignored */
+            startX &= 0xF8;
+            image_width &= 0xF8;
+
+            /* validate x and width */
+            if (startX + image_width >= Width)
+            {
+                x_end = Width - 1;
+            }
+            else
+            {
+                x_end = startX + image_width - 1;
+            }
+
+            /* validate y and height */
+            if (startY + image_height >= Height)
+            {
+                y_end = Height - 1;
+            }
+            else
+            {
+                y_end = startY + image_height - 1;
+            }
+
+            /* set image data */
+            for (int j = 0; j < y_end - startY + 1; j++)
+            {
+                for (int i = 0; i < (x_end - startX + 1) / 8; i++)
+                {
+                    // SendData(image_buffer[i + j * (image_width / 8)]);
+                    if (i == 0)
+                    {
+                        /* clear offset bits */
+                        buffer[startX / 8 + (image_width / 8) * (startY + j)] &= (byte)(0xFF << offset);
+
+                        /* assign offset bits */
+                        buffer[startX / 8 + (image_width / 8) * (startY + j)] |= (byte)(image_buffer[i + (startY + j) * (image_width / 8)] >> (offset == 0 ? 0 : 8 - offset));
+                    }
+                    else
+                    {
+                        if (offset == 0)
+                        {
+                            // Normal assignment
+                            buffer[startX / 8 + i + (image_width / 8) * (startY + j)] = image_buffer[i + (startY + j) * (image_width / 8)];
+                        }
+                        else
+                        {
+                            buffer[startX / 8 + i + (image_width / 8) * (startY + j)] =
+                                (byte)((image_buffer[i + (startY + j) * (image_width / 8)] << offset) | (image_buffer[i + 1 + (startY + j) * (image_width / 8)] >> (8 - offset)));
+                        }
+                    }
+                }
+            }
         }
 
         public void SetFrameMemory(byte[] image_buffer, int image_width, int image_height)
