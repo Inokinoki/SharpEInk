@@ -32,6 +32,10 @@ namespace WinIoTEPDInk
             Height  = EpdResolution.HEIGHT[(int)model];
 
             buffer = new byte[Width / 8 * Height];  // Create a buffer for image
+            for (int i = 0; i < Width / 8 * Height; ++i)
+            {
+                buffer[i] = 0xFF;
+            }
 
             _image = image;     // EPD preview will be updated to this control
         }
@@ -58,23 +62,19 @@ namespace WinIoTEPDInk
                 byte[] generatedImage = new byte[4 * Width * Height];
                 for (int i = 0; i < Width * Height; ++i)
                 {
-                    //generatedImage[4 * i] = 255;
-                    //generatedImage[4 * i + 1] = 255;
-                    //generatedImage[4 * i + 2] = 255;
-                    //generatedImage[4 * i + 3] = 255;
-                    if ((buffer[i / 8] & (0x80 >> (i % 8))) != 0)
+                    if ((buffer[i / 8] & (0x80 >> (i % 8))) == 0)
+                    {
+                        generatedImage[4 * i] = 0;
+                        generatedImage[4 * i + 1] = 0;
+                        generatedImage[4 * i + 2] = 0;
+                        generatedImage[4 * i + 3] = 255;
+                    }
+                    else
                     {
                         generatedImage[4 * i] = 255;
                         generatedImage[4 * i + 1] = 255;
                         generatedImage[4 * i + 2] = 255;
                         generatedImage[4 * i + 3] = 255;
-                    }
-                    else
-                    {
-                        generatedImage[4 * i] = 0;
-                        generatedImage[4 * i + 1] = 0;
-                        generatedImage[4 * i + 2] = 0;
-                        generatedImage[4 * i + 3] = 0;
                     }
                 }
 
@@ -100,10 +100,6 @@ namespace WinIoTEPDInk
                 _image.Source = imageSource;
                 _image.Width = Width;
                 _image.Height = Height;
-                Debug.WriteLine("Loaded to image OK");
-                Debug.WriteLine(_image.Name);
-                Debug.WriteLine(Width);
-                Debug.WriteLine(Height);
             }
         }
 
