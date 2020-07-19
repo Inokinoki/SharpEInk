@@ -7,6 +7,9 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace WinIoTEPDInk
 {
+    /**
+     * TODO: add more models
+     */
     public enum EpdModel
     {
         EPD1IN54 = 0,
@@ -67,7 +70,7 @@ namespace WinIoTEPDInk
          * Functional
          */
         void Reset();
-        void DisplayFrameAsync();
+        void DisplayFrame();
         void Sleep();
 
         /**

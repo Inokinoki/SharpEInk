@@ -48,7 +48,7 @@ namespace WinIoTEPDInk
             }
         }
 
-        public async void DisplayFrameAsync()
+        public async void DisplayFrame()
         {
             if (Sleeping)
             {
