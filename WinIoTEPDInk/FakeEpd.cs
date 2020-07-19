@@ -120,7 +120,7 @@ namespace WinIoTEPDInk
             // FIXME: what should happen when reset
         }
 
-        public void SetFrameMemory(byte[] image_buffer, int startX, int startY, int image_width, int image_height)
+        public void SetFrameMemory(byte[] image_buffer, int image_width, int image_height, int startX, int startY)
         {
             if (Sleeping)
             {
@@ -199,7 +199,7 @@ namespace WinIoTEPDInk
                 return;
             }
 
-            SetFrameMemory(image_buffer, 0, 0, image_width, image_height);
+            SetFrameMemory(image_buffer, image_width, image_height, 0, 0);
         }
 
         public void SetFrameMemory(byte[] image_buffer)

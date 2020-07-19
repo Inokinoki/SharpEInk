@@ -73,7 +73,7 @@ namespace WinIoTEPDInk
         /**
          * Set image
          */
-        void SetFrameMemory(byte[] image_buffer, int startX, int startY, int image_width, int image_height);
+        void SetFrameMemory(byte[] image_buffer, int image_width, int image_height, int startX, int startY);
         void SetFrameMemory(byte[] image_buffer);
 
         /**
