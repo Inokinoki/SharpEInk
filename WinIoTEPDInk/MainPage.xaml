@@ -11,6 +11,13 @@
 
     <Grid>
         <StackPanel>
+            <TextBlock Text="E-Ink Control" HorizontalAlignment="Center" FontSize="32"/>
+            <TextBlock x:Name="connectSPIEpdStateText" Text="SPI Epd device disconnected" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="connectSPIEpdButton" Content="Connect" Click="ConnectButton_Click" Margin="10"/>
+                <Button x:Name="syncSPIEpdButton" Content="Sync" Click="SyncButton_Click" Margin="10"/>
+                <Button x:Name="resetSPIEpdButton" Content="Reset" Click="ResetButton_Click" Margin="10"/>
+            </StackPanel>
             <TextBlock Text="E-Ink Preview" HorizontalAlignment="Center" FontSize="32"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="Scale: " HorizontalAlignment="Center" VerticalAlignment="Center"/>
