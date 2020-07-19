@@ -156,7 +156,7 @@ namespace WinIoTEPDInk
                 yEnd = startY + imageHeight - 1;
             }
 
-            /* set image data */
+            /* FIXME: set image data on the other screens */
             for (int j = 0; j < yEnd - startY + 1; j++)
             {
                 for (int i = 0; i < (xEnd - startX + 1) / 8; i++)
