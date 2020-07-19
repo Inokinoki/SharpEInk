@@ -28,8 +28,36 @@ namespace WinIoTEPDInk
 
             FakeEpd epd = new FakeEpd(EpdModel.EPD2IN9, display);
             
-            epd.SetFrameMemory(TestData.WAVESHARE_SAMPLE);
+            epd.SetFrameMemory(TestData.WAVESHARE_SAMPLE, 128, 200);
             epd.DisplayFrameAsync();
+        }
+
+        private double originWidth = -1;
+        private double originHeight = -1;
+
+        private void SizeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (originHeight <= 0 || originHeight <= 0)
+            {
+                // Avoid the call on creation
+                if (display != null)
+                {
+                    originHeight = display.Height;
+                    originWidth = display.Width;
+                }
+            }
+
+            // Avoid the call on creation
+            if (display != null)
+            {
+                display.Width = originWidth * e.NewValue / 100;
+                display.Height = originHeight * e.NewValue / 100;
+            }
+        }
+
+        private void SizeResetButton_Click(object sender, RoutedEventArgs e)
+        {
+            sizeSlider.Value = 100;
         }
     }
 }

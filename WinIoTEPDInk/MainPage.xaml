@@ -12,6 +12,11 @@
     <Grid>
         <StackPanel>
             <TextBlock Text="E-Ink Preview" HorizontalAlignment="Center" FontSize="32"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="Scale: " HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Slider x:Name="sizeSlider" Width="200" Value="100" Minimum="50" Maximum="500" ValueChanged="SizeSlider_ValueChanged"/>
+                <Button x:Name="sizeResetButton" Content="Reset" Click="SizeResetButton_Click"/>
+            </StackPanel>
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border Background="Gray" BorderThickness="10">
                     <Border.BorderBrush>
