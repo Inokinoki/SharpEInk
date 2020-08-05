@@ -8,6 +8,7 @@ using Windows.Devices.Enumeration;
 using Windows.Devices.Gpio;
 using Windows.Devices.Spi;
 using WinIoTEPDInk;
+using WinIoTEPDInk.Impl;
 
 namespace WinIoTEPDInk
 {
@@ -460,6 +461,87 @@ namespace WinIoTEPDInk
                             return 0xFF;
                     }
                     break;
+                case EpdModel.EPD4IN2:
+                    switch (command)
+                    {
+                        case SPIEpdCommand.PANEL_SETTING:
+                            return 0x00;
+                        case SPIEpdCommand.POWER_SETTING:
+                            return 0x01;
+                        case SPIEpdCommand.POWER_OFF:
+                            return 0x02;
+                        case SPIEpdCommand.POWER_OFF_SEQUENCE_SETTING:
+                            return 0x03;
+                        case SPIEpdCommand.POWER_ON:
+                            return 0x04;
+                        case SPIEpdCommand.POWER_ON_MEASURE:
+                            return 0x05;
+                        case SPIEpdCommand.BOOSTER_SOFT_START:
+                            return 0x06;
+                        case SPIEpdCommand.DEEP_SLEEP:
+                            return 0x07;
+                        case SPIEpdCommand.DATA_START_TRANSMISSION_1:
+                            return 0x10;
+                        case SPIEpdCommand.DATA_STOP:
+                            return 0x11;
+                        case SPIEpdCommand.DISPLAY_REFRESH:
+                            return 0x12;
+                        case SPIEpdCommand.DATA_START_TRANSMISSION_2:
+                            return 0x13;
+                        case SPIEpdCommand.LUT_FOR_VCOM:
+                            return 0x20;
+                        case SPIEpdCommand.LUT_WHITE_TO_WHITE:
+                            return 0x21;
+                        case SPIEpdCommand.LUT_BLACK_TO_WHITE:
+                            return 0x22;
+                        case SPIEpdCommand.LUT_WHITE_TO_BLACK:
+                            return 0x23;
+                        case SPIEpdCommand.LUT_BLACK_TO_BLACK:
+                            return 0x24;
+                        case SPIEpdCommand.PLL_CONTROL:
+                            return 0x30;
+                        case SPIEpdCommand.TEMPERATURE_SENSOR_COMMAND:
+                            return 0x40;
+                        case SPIEpdCommand.TEMPERATURE_SENSOR_SELECTION:
+                            return 0x41;
+                        case SPIEpdCommand.TEMPERATURE_SENSOR_WRITE:
+                            return 0x42;
+                        case SPIEpdCommand.TEMPERATURE_SENSOR_READ:
+                            return 0x43;
+                        case SPIEpdCommand.VCOM_AND_DATA_INTERVAL_SETTING:
+                            return 0x50;
+                        case SPIEpdCommand.LOW_POWER_DETECTION:
+                            return 0x51;
+                        case SPIEpdCommand.TCON_SETTING:
+                            return 0x60;
+                        case SPIEpdCommand.RESOLUTION_SETTING:
+                            return 0x61;
+                        case SPIEpdCommand.GSST_SETTING:
+                            return 0x65;
+                        case SPIEpdCommand.GET_STATUS:
+                            return 0x71;
+                        case SPIEpdCommand.AUTO_MEASUREMENT_VCOM:
+                            return 0x80;
+                        case SPIEpdCommand.READ_VCOM_VALUE:
+                            return 0x81;
+                        case SPIEpdCommand.VCM_DC_SETTING:
+                            return 0x82;
+                        case SPIEpdCommand.PARTIAL_WINDOW:
+                            return 0x90;
+                        case SPIEpdCommand.PARTIAL_IN:
+                            return 0x91;
+                        case SPIEpdCommand.PARTIAL_OUT:
+                            return 0x92;
+                        case SPIEpdCommand.PROGRAM_MODE:
+                            return 0xA0;
+                        case SPIEpdCommand.ACTIVE_PROGRAMMING:
+                            return 0xA1;
+                        case SPIEpdCommand.READ_OTP:
+                            return 0xA2;
+                        case SPIEpdCommand.POWER_SAVING:
+                            return 0xE3;
+                    }
+                    break;
             }
             return 0;
         }
@@ -488,7 +570,45 @@ namespace WinIoTEPDInk
         SET_RAM_Y_ADDRESS_START_END_POSITION,
         SET_RAM_X_ADDRESS_COUNTER,
         SET_RAM_Y_ADDRESS_COUNTER,
-        TERMINATE_FRAME_READ_WRITE
+        TERMINATE_FRAME_READ_WRITE,
+        PANEL_SETTING,
+        POWER_SETTING,
+        POWER_OFF,
+        POWER_OFF_SEQUENCE_SETTING,
+        POWER_ON,
+        POWER_ON_MEASURE,
+        BOOSTER_SOFT_START,
+        DEEP_SLEEP,
+        DATA_START_TRANSMISSION_1,
+        DATA_STOP,
+        DISPLAY_REFRESH,
+        DATA_START_TRANSMISSION_2,
+        LUT_FOR_VCOM,
+        LUT_WHITE_TO_WHITE,
+        LUT_BLACK_TO_WHITE,
+        LUT_WHITE_TO_BLACK,
+        LUT_BLACK_TO_BLACK,
+        PLL_CONTROL,
+        TEMPERATURE_SENSOR_COMMAND,
+        TEMPERATURE_SENSOR_SELECTION,
+        TEMPERATURE_SENSOR_WRITE,
+        TEMPERATURE_SENSOR_READ,
+        VCOM_AND_DATA_INTERVAL_SETTING,
+        LOW_POWER_DETECTION,
+        TCON_SETTING,
+        RESOLUTION_SETTING,
+        GSST_SETTING,
+        GET_STATUS,
+        AUTO_MEASUREMENT_VCOM,
+        READ_VCOM_VALUE,
+        VCM_DC_SETTING,
+        PARTIAL_WINDOW,
+        PARTIAL_IN,
+        PARTIAL_OUT,
+        PROGRAM_MODE,
+        ACTIVE_PROGRAMMING,
+        READ_OTP,
+        POWER_SAVING
     }
 
     internal class SPIEpdLookupTable
