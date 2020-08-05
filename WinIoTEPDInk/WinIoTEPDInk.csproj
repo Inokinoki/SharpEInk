@@ -119,6 +119,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Impl\Epd4in2.cs" />
+    <Compile Include="Impl\Epd2in9.cs" />
+    <Compile Include="Impl\EpdFallback.cs" />
+    <Compile Include="Impl\IEpdImplBase.cs" />
     <Compile Include="SPIEpd.cs" />
     <Compile Include="FakeEpd.cs" />
     <Compile Include="IEpd.cs" />

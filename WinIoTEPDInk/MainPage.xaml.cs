@@ -68,32 +68,32 @@ namespace WinIoTEPDInk
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
-            realEpd.connectSPIAsync();
+            Task.Run(() =>
+            {
+                realEpd.connectSPI();
+                realEpd.Init();
+            });
         }
 
         private void SyncButton_Click(object sender, RoutedEventArgs e)
         {
-            Sync();
+            Task.Run(() =>
+            {
+                realEpd.SetFrameMemory(TestData.RANDOM_SAMPLE);
+                realEpd.DisplayFrame();
+            });
         }
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
             // TODO
-            Reset();
-        }
-
-        private async Task Sync()
-        {
-            await realEpd.SetFrameMemoryAsync(TestData.RANDOM_SAMPLE);
-            await realEpd.DisplayFrameAsync();
-        }
-
-        private async Task Reset()
-        {
-            await realEpd.ClearFrameMemoryAsync(0xAA);
-            await realEpd.DisplayFrameAsync();
-            await realEpd.ClearFrameMemoryAsync(0xFF);
-            await realEpd.DisplayFrameAsync();
+            Task.Run(() =>
+            {
+                realEpd.ClearFrameMemory(0xAA);
+                realEpd.DisplayFrame();
+                realEpd.ClearFrameMemory(0xFF);
+                realEpd.DisplayFrame();
+            });
         }
     }
 }
