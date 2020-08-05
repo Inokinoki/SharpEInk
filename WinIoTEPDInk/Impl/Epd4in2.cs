@@ -54,6 +54,60 @@ namespace WinIoTEPDInk.Impl
             POWER_SAVING = 0xE3
         }
 
+        /*
+         * Lookup Table
+         */
+        private static byte[] LookupTableVCOM0 = new byte[]
+        {
+            0x00, 0x17, 0x00, 0x00, 0x00, 0x02,
+            0x00, 0x17, 0x17, 0x00, 0x00, 0x02,
+            0x00, 0x0A, 0x01, 0x00, 0x00, 0x01,
+            0x00, 0x0E, 0x0E, 0x00, 0x00, 0x02,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        };
+        private static byte[] LookupTableWW = new byte[]
+        {
+            0x40, 0x17, 0x00, 0x00, 0x00, 0x02,
+            0x90, 0x17, 0x17, 0x00, 0x00, 0x02,
+            0x40, 0x0A, 0x01, 0x00, 0x00, 0x01,
+            0xA0, 0x0E, 0x0E, 0x00, 0x00, 0x02,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        };
+        private static byte[] LookupTableBW = new byte[]
+        {
+            0x40, 0x17, 0x00, 0x00, 0x00, 0x02,
+            0x90, 0x17, 0x17, 0x00, 0x00, 0x02,
+            0x40, 0x0A, 0x01, 0x00, 0x00, 0x01,
+            0xA0, 0x0E, 0x0E, 0x00, 0x00, 0x02,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        };
+        private static byte[] LookupTableBB = new byte[]
+        {
+            0x80, 0x17, 0x00, 0x00, 0x00, 0x02,
+            0x90, 0x17, 0x17, 0x00, 0x00, 0x02,
+            0x80, 0x0A, 0x01, 0x00, 0x00, 0x01,
+            0x50, 0x0E, 0x0E, 0x00, 0x00, 0x02,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        };
+        private static byte[] LookupTableWB = new byte[]
+        {
+            0x80, 0x17, 0x00, 0x00, 0x00, 0x02,
+            0x90, 0x17, 0x17, 0x00, 0x00, 0x02,
+            0x80, 0x0A, 0x01, 0x00, 0x00, 0x01,
+            0x50, 0x0E, 0x0E, 0x00, 0x00, 0x02,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        };
+
         private SPIEpd _epd = null;
 
         public Epd4in2(SPIEpd epd)
@@ -63,18 +117,96 @@ namespace WinIoTEPDInk.Impl
 
         public async Task DisplayFrameAsync()
         {
+            SetLut();
+            _epd.SendCommand((byte)SpiCommand.DISPLAY_REFRESH);
+            while (_epd.Busy)
+            {
+                await Task.Delay(100);
+            }
         }
 
         public async Task SleepAsync()
         {
+            _epd.SendCommand((byte)SpiCommand.VCOM_AND_DATA_INTERVAL_SETTING);
+            _epd.SendData(0x17);                                        //border floating    
+            _epd.SendCommand((byte)SpiCommand.VCM_DC_SETTING);          //VCOM to 0V
+            _epd.SendCommand((byte)SpiCommand.PANEL_SETTING);
+            await Task.Delay(100);
+
+            _epd.SendCommand((byte)SpiCommand.POWER_SETTING);           //VG&VS to 0V fast
+            _epd.SendData(0x00);
+            _epd.SendData(0x00);
+            _epd.SendData(0x00);
+            _epd.SendData(0x00);
+            _epd.SendData(0x00);
+            await Task.Delay(100);
+
+            _epd.SendCommand((byte)SpiCommand.POWER_OFF);          //power off
+            while (_epd.Busy)
+            {
+                await Task.Delay(100);
+            }
+
+            _epd.SendCommand((byte)SpiCommand.DEEP_SLEEP);         //deep sleep
+            _epd.SendData(0xA5);
         }
 
         public async Task SetFrameMemoryAsync(byte[] imageBuffer)
         {
+            _epd.SendCommand((byte)SpiCommand.RESOLUTION_SETTING);
+            _epd.SendData((byte)(_epd.Width >> 8));
+            _epd.SendData((byte)(_epd.Width & 0xff));
+            _epd.SendData((byte)(_epd.Height >> 8));
+            _epd.SendData((byte)(_epd.Height & 0xff));
+
+            _epd.SendCommand((byte)SpiCommand.VCM_DC_SETTING);
+            _epd.SendData(0x12);
+
+            _epd.SendCommand((byte)SpiCommand.VCOM_AND_DATA_INTERVAL_SETTING);
+            _epd.SendCommand(0x97);    //VBDF 17|D7 VBDW 97  VBDB 57  VBDF F7  VBDW 77  VBDB 37  VBDR B7
+
+            if (imageBuffer.Length > 0)
+            {
+                _epd.SendCommand((byte)SpiCommand.DATA_START_TRANSMISSION_1);
+                for (int i = 0; i < _epd.Width / 8 * _epd.Height; i++)
+                {
+                    _epd.SendData(0xFF);      // bit set: white, bit reset: black
+                }
+                await Task.Delay(2);
+                _epd.SendCommand((byte)SpiCommand.DATA_START_TRANSMISSION_2);
+                _epd.SendData(imageBuffer);
+                await Task.Delay(2);
+            }
+
+            _epd.SendCommand((byte)SpiCommand.DISPLAY_REFRESH);
+            while (_epd.Busy)
+            {
+                await Task.Delay(100);
+            }
         }
 
         public async Task ClearFrameMemoryAsync(byte color)
         {
+            _epd.SendCommand((byte)SpiCommand.RESOLUTION_SETTING);
+            _epd.SendData((byte)(_epd.Width >> 8));
+            _epd.SendData((byte)(_epd.Width & 0xff));
+            _epd.SendData((byte)(_epd.Height >> 8));
+            _epd.SendData((byte)(_epd.Height & 0xff));
+
+            _epd.SendCommand((byte)SpiCommand.DATA_START_TRANSMISSION_1);
+            await Task.Delay(2);
+            for (int i = 0; i < _epd.Width / 8 * _epd.Height; i++)
+            {
+                _epd.SendData(0xFF);
+            }
+            await Task.Delay(2);
+            _epd.SendCommand((byte)SpiCommand.DATA_START_TRANSMISSION_2);
+            await Task.Delay(2);
+            for (int i = 0; i < _epd.Width / 8 * _epd.Height; i++)
+            {
+                _epd.SendData(0xFF);
+            }
+            await Task.Delay(2);
         }
 
         public async Task SetMemoryAreaAsync(int xStart, int yStart, int xEnd, int yEnd)
@@ -101,11 +233,58 @@ namespace WinIoTEPDInk.Impl
 
         public async Task InitAsync()
         {
+            await ResetAsync();
+
+            _epd.SendCommand((byte)SpiCommand.POWER_SETTING);
+            _epd.SendData(0x03);                  // VDS_EN, VDG_EN
+            _epd.SendData(0x00);                  // VCOM_HV, VGHL_LV[1], VGHL_LV[0]
+            _epd.SendData(0x2b);                  // VDH
+            _epd.SendData(0x2b);                  // VDL
+            _epd.SendData(0xff);                  // VDHR
+
+            //07 0f 17 1f 27 2F 37 2f
+            _epd.SendCommand((byte)SpiCommand.BOOSTER_SOFT_START);
+            _epd.SendData(0x17);
+            _epd.SendData(0x17);
+            _epd.SendData(0x17);
+
+            _epd.SendCommand((byte)SpiCommand.POWER_ON);
+            while (_epd.Busy)
+            {
+                await Task.Delay(100);
+            }
+
+            // KW-BF   KWR-AF  BWROTP 0f
+            _epd.SendCommand((byte)SpiCommand.PANEL_SETTING);
+            _epd.SendData(0xbf);
+            _epd.SendData(0x0b);
+
+            // 3A 100HZ   29 150Hz 39 200HZ  31 171HZ
+            _epd.SendCommand((byte)SpiCommand.PLL_CONTROL);
+            _epd.SendData(0x3c);
         }
 
         public async Task ResetAsync()
         {
             await _epd.ResetImplAsync();
+        }
+
+        private void SetLut()
+        {
+            _epd.SendCommand((byte)SpiCommand.LUT_FOR_VCOM);        //vcom
+            _epd.SendData(LookupTableVCOM0);
+
+            _epd.SendCommand((byte)SpiCommand.LUT_WHITE_TO_WHITE);  //ww --
+            _epd.SendData(LookupTableWW);
+
+            _epd.SendCommand((byte)SpiCommand.LUT_BLACK_TO_WHITE);  //bw r
+            _epd.SendData(LookupTableBW);
+
+            _epd.SendCommand((byte)SpiCommand.LUT_WHITE_TO_BLACK);  //wb w
+            _epd.SendData(LookupTableBB);
+
+            _epd.SendCommand((byte)SpiCommand.LUT_BLACK_TO_BLACK);  //bb b
+            _epd.SendData(LookupTableWB);
         }
     }
 }

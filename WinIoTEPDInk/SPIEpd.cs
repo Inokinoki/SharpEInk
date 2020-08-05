@@ -221,7 +221,7 @@ namespace WinIoTEPDInk
 
         public void DisplayFrame()
         {
-            _impl.DisplayFrameAsync();
+            _impl.DisplayFrameAsync().Wait();
         }
 
         public void Sleep()
@@ -255,6 +255,11 @@ namespace WinIoTEPDInk
         }
 
         public void SetFrameMemory(byte[] imageBuffer)
+        {
+            _impl.SetFrameMemoryAsync(imageBuffer).Wait();
+        }
+
+        public void SetFrameMemoryAsync(byte[] imageBuffer)
         {
             _impl.SetFrameMemoryAsync(imageBuffer);
         }
@@ -357,7 +362,7 @@ namespace WinIoTEPDInk
             //_chipselect.Write(GpioPinValue.Low);
             _epd_ink_screen.Write(dataArray);
             //_chipselect.Write(GpioPinValue.High);
-            Debug.WriteLine("Wrote 1 byte");
+            // Debug.WriteLine("Wrote 1 byte");
         }
 
         private void Transfer(byte[] data)
@@ -375,7 +380,7 @@ namespace WinIoTEPDInk
 
             //_chipselect.Write(GpioPinValue.Low);
             _epd_ink_screen.Write(data);
-            Debug.WriteLine("Wrote " + data.Length + " bytes");
+            // Debug.WriteLine("Wrote " + data.Length + " bytes");
             //_chipselect.Write(GpioPinValue.High);
         }
     }
